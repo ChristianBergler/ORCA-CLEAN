@@ -20,8 +20,8 @@ If ORCA-CLEAN is used for your own research please cite the following publicatio
 ```
 
 ## General Information
-Manuscript Title: <em>ORCA-CLEAN: A Deep Denoising Toolkit for Killer Whale Communication</em>. A description of ORCA-CLEAN was handed in to Interspeech 2020 (under review).<br><br>A <b>preprint version</b> of the submitted paper together with all original/denoised sound examples (killer whales, birds, and human speech), listed in the paper, can be found here.
+Manuscript Title: <em>ORCA-CLEAN: A Deep Denoising Toolkit for Killer Whale Communication</em>. The following link will provide all original/denoised sound examples (killer whales, birds, and human speech), listed in the paper. All spectrograms can be viewed visually and/or listened to directly.
 
 <br>[ORCA-CLEAN - Denoised Audio/Spectrogram Examples](https://christianbergler.github.io/ORCA-CLEAN/)<br><br>
 
-The source code of ORCA-CLEAN will be publicly available after publication of our manuscript.<br><br>
+The source code of ORCA-CLEAN will be publicly available soon!<br><br>
