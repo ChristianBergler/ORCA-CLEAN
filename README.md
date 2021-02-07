@@ -59,10 +59,10 @@ Label Name=call-Orca-A12, ID=929, Year=2019, Tapename=Rec-031-2018-10-19-06-59-5
 
 orca-vocalization_2381_2010_101BC_149817_150055.wav
 
-Label Name=noise-orca-vocalization, ID=2381, Year=2010, Tapename=101BC, Starttime in ms=149817, Starttime in ms=150055
+Label Name=orca-vocalization, ID=2381, Year=2010, Tapename=101BC, Starttime in ms=149817, Starttime in ms=150055
 
 ## Required Directory Structure for Training
-ORCA-CLEAN does its own training, validation, and test split of the entire provided data archive. The entire data could be either stored in one single folder and ORCA-CLEAN will generate the datasplit by creating three CSV files (train.csv, val.csv, and test.csv) representing the partitions and containing the filenames. There is also the possibility to have a main data folder and subfolders containing special type of files e.g. N9_calls, N1_calls, unknown_orca_calls, etc.. ORCA-CLEAN will create for each subfolder a stand-alone train/validation/test split and merges all files of each subfolder partition together. ORCA-CLEAN ensures that no audio files of a single tape are spread over training/validation/testing. Therefore it moves all files of one tape into only one of the three partitions. If there is only data from one tape or if one of the three partitions do not contain any files the training will not be started. By default ORCA-CLEAN uses 70% of the files for training, 15% for validation, and 15% for testing. In order to guarantee such a distribution it is important to have a similar amount of labeled files per tape.
+ORCA-CLEAN does its own training, validation, and test split of the entire provided data archive. The entire data could be either stored in one single folder and ORCA-CLEAN will generate the datasplit by creating three CSV files (train.csv, val.csv, and test.csv) representing the partitions and containing the filenames. There is also the possibility to have a main data folder and subfolders containing special type of files e.g. N9_calls, N1_calls, unknown_orca_calls, etc.. ORCA-CLEAN will create for each subfolder a stand-alone train/validation/test split and merges all files of each subfolder partition together. ORCA-CLEAN ensures that no audio files of a single tape are spread over training/validation/testing. Therefore it moves all files of one tape into only one of the three partitions. If there is only data from one tape or if one of the three partitions do not contain any files the training will not be started. By default ORCA-CLEAN uses 70% of the files for training, 15% for validation, and 15% for testing. In order to guarantee such a distribution it is important to have a similar amount of labeled files per tape. This is just an example command in order to start the training:
 
 ## Network Training
 For a detailed description about each possible training option we refer to the usage/code in main.py (usage: main.py -h). This is just an example command in order to start network training:
@@ -74,7 +74,7 @@ During training ORCA-CLEAN will be verified on an independent validation set. In
 
 ```tensorboard --logdir /directory_to_model/summaries/```
 
-There exist also the possibility to evaluate your model on either a folder including unseen audio recording. The prediction script (predict.py) reads and denoises incoming audio input (.wav). ORCA-CLEAN removes noise of the respective input spectrogram and reconstructs the denoised audio. Moreover, there is an option to visualize noisy network input and denoised network output. For a detailed description about each possible option we refer to the usage/code in predict.py (usage: predict.py -h). This is just an example command in order to start the prediction:
+There exist also the possibility to evaluate your model on either a folder including unseen audio recordings (.wav) of different length, or a stand-alone audio tape. The prediction script (predict.py) reads and denoises incoming audio input (.wav). ORCA-CLEAN removes noise of the respective input spectrogram and reconstructs the denoised audio. Moreover, there is an option to visualize noisy network input and denoised network output. For a detailed description about each possible option we refer to the usage/code in predict.py (usage: predict.py -h). This is just an example command in order to start the prediction:
 
 Example Command:
 
