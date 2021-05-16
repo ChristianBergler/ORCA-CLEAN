@@ -158,6 +158,7 @@ if __name__ == "__main__":
     n_fft = dataOpts["n_fft"]
     hop_length = dataOpts["hop_length"]
     n_freq_bins = dataOpts["n_freq_bins"]
+    freq_cmpr = dataOpts["freq_compression"]
 
     log.debug("dataOpts: " + str(dataOpts))
 
@@ -176,13 +177,13 @@ if __name__ == "__main__":
         dataset = SingleAudioFolder(
             file_names=audio_files,
             working_dir=input_file,
-            sr=dataOpts["sr"],
-            n_fft=dataOpts["n_fft"],
-            hop_length=dataOpts["hop_length"],
-            n_freq_bins=dataOpts["n_freq_bins"],
-            freq_compression=dataOpts["freq_compression"],
-            f_min=dataOpts["fmin"],
-            f_max=dataOpts["fmax"],
+            sr=sr,
+            n_fft=n_fft,
+            hop_length=hop_length,
+            n_freq_bins=n_freq_bins,
+            freq_compression=freq_cmpr,
+            f_min=fmin,
+            f_max=fmax
         )
 
         log.info("number of files to predict={}".format(len(audio_files)))
@@ -203,6 +204,7 @@ if __name__ == "__main__":
              n_freq_bins=n_freq_bins,
              f_min=fmin,
              f_max=fmax,
+             freq_compression=freq_cmpr
         )
 
         log.info("size of the file(samples)={}".format(dataset.n_frames))

@@ -167,6 +167,16 @@ class Normalize(object):
             (spec - self.ref_level_db - self.min_level_db) / -self.min_level_db, 0, 1
         )
 
+"""Normalize min/max scale to 0..1"""
+class MinMaxNormalize(object):
+
+    def __call__(self, spectrogram):
+        spectrogram -= spectrogram.min()
+        if spectrogram.max().item() == 0.0:
+            return spectrogram
+        spectrogram /= spectrogram.max()
+        return spectrogram
+
 """Turns a spectrogram from the power/amplitude scale to the decibel scale."""
 class Amp2Db(object):
 
