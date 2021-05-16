@@ -183,7 +183,8 @@ if __name__ == "__main__":
             n_freq_bins=n_freq_bins,
             freq_compression=freq_cmpr,
             f_min=fmin,
-            f_max=fmax
+            f_max=fmax,
+            center=True
         )
 
         log.info("number of files to predict={}".format(len(audio_files)))
@@ -204,7 +205,8 @@ if __name__ == "__main__":
              n_freq_bins=n_freq_bins,
              f_min=fmin,
              f_max=fmax,
-             freq_compression=freq_cmpr
+             freq_compression=freq_cmpr,
+             center=True
         )
 
         log.info("size of the file(samples)={}".format(dataset.n_frames))

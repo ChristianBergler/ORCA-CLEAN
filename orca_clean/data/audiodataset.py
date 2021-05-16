@@ -785,11 +785,13 @@ class StridedAudioDataset(torch.utils.data.Dataset):
         freq_compression: str = "linear",
         f_min: int = 200,
         f_max: int = 18000,
+        center=True
     ):
 
         self.sp = signal.signal_proc()
 
         self.hop = hop
+        self.center = center
         self.filename = file_name
         self.sequence_len = sequence_len
         self.audio = T.load_audio_file(file_name, sr=sr, mono=True)
@@ -797,7 +799,7 @@ class StridedAudioDataset(torch.utils.data.Dataset):
 
         spec_t = [
             T.PreEmphasize(DefaultSpecDatasetOps["preemphases"]),
-            T.Spectrogram(fft_size, fft_hop, center=False),
+            T.Spectrogram(fft_size, fft_hop, center=self.center),
         ]
 
         self.spec_transforms = T.Compose(spec_t)
@@ -867,6 +869,7 @@ class SingleAudioFolder(AudioDataset):
         n_freq_bins=256,
         f_min=None,
         f_max=18000,
+        center=True,
         *args,
         **kwargs
     ):
@@ -880,6 +883,7 @@ class SingleAudioFolder(AudioDataset):
         self.f_min = f_min
         self.f_max = f_max
         self.n_fft = n_fft
+        self.center = center
         self.hop_length = hop_length
         self.sp = signal.signal_proc()
         self.freq_compression = freq_compression
@@ -899,7 +903,7 @@ class SingleAudioFolder(AudioDataset):
         spec_transforms = [
             lambda fn: T.load_audio_file(fn, sr=sr),
             T.PreEmphasize(DefaultSpecDatasetOps["preemphases"]),
-            T.Spectrogram(n_fft, hop_length, center=False)
+            T.Spectrogram(n_fft, hop_length, center=self.center)
         ]
 
         self.file_reader = AsyncFileReader()
