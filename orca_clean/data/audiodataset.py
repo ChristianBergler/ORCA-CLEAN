@@ -11,8 +11,8 @@ import csv
 import glob
 import random
 import pathlib
-import subprocess
 import numpy as np
+import soundfile as sf
 import data.transforms as T
 
 import torch
@@ -85,23 +85,19 @@ class _ParallelFilter(object):
                     yield c
 
 """
-Analyzing loudness criteria of each audio file by using linux tool 'sox' and checking maximum amplitude
-(if sox is not available on your system you can comment out the 'get_broken_audio_files' function or replace that part 
-by your own implementation - default: get_broken_audio_files is not used)
+Analyzing loudness criteria of each audio file by checking maximum amplitude (default: 1e-3)
 """
 def _loudness_criteria(file_name: str, working_dir: str = None):
     if working_dir is not None:
         file_path = os.path.join(working_dir, file_name)
     else:
         file_path = file_name
-    cmd = ["sox", file_path, "-n", "stat"]
-    out = subprocess.Popen(cmd, stderr=subprocess.PIPE).communicate()[1].decode("utf-8")
-    for line in out.splitlines():
-        if line.startswith("Maximum amplitude:"):
-            if float(line[18:].strip()) < 1e-3:
-                return True, file_name
-            break
-    return False, None
+    y, __ = sf.read(file_path, always_2d=True, dtype="float32")
+    max_ampl = y.max()
+    if max_ampl < 1e-3:
+        return True, file_name
+    else:
+        return False, None
 
 """
 Filtering all audio files in previous which do not fulfill the loudness criteria
@@ -645,22 +641,21 @@ class Dataset(AudioDataset):
 
         if distribution_idx == 0:
             if self.random:
-                gaus_stdv = float(random.randint(0, 25))
+                gaus_stdv = round(random.uniform(0.1, 25.0), 2)
             else:
                 gaus_stdv = self.gaus_stdv
-            distribution = torch.distributions.normal.Normal(torch.tensor(self.gaus_mean),
-                                                             torch.tensor(gaus_stdv)).sample(
+            distribution = torch.distributions.normal.Normal(torch.tensor(self.gaus_mean), torch.tensor(gaus_stdv)).sample(
                 sample_shape=torch.Size([128, 256])).squeeze(dim=-1)
         elif distribution_idx == 1:
             if self.random:
-                df = float(random.randint(0, 30))
+                df = round(random.uniform(0.1, 30.0), 2)
             else:
                 df = self.df
             distribution = torch.distributions.chi2.Chi2(torch.tensor(df)).sample(
                 sample_shape=torch.Size([128, 256])).squeeze(dim=-1)
         elif distribution_idx == 2:
             if self.random:
-                p_lambda = float(random.randint(0, 30))
+                p_lambda = round(random.uniform(0.1, 30.0), 2)
             else:
                 p_lambda = self.poisson_lambda
             distribution = torch.distributions.poisson.Poisson(torch.tensor(p_lambda)).sample(
