@@ -229,6 +229,13 @@ parser.add_argument(
     help="FFT hop length.")
 
 parser.add_argument(
+    "--min_max_norm",
+    dest="min_max_norm",
+    action="store_true",
+    help="activates min-max normalization instead of default 0/1-dB-normalization.",
+)
+
+parser.add_argument(
     "--augmentation",
     type=str2bool,
     default=True,
@@ -358,6 +365,7 @@ if __name__ == "__main__":
             noise_files_test=noise_files_test if split == "test" else False,
             random=True if split == "train" or (split == "val" and random_val) else False,
             dataset_name=split,
+            min_max_normalize=ARGS.min_max_norm
         )
         for split in split_fracs.keys()
     }

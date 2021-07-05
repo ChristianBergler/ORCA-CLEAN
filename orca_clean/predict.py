@@ -94,6 +94,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--min_max_norm",
+    dest="min_max_norm",
+    action="store_true",
+    help="activates min-max normalization instead of default 0/1-dB-normalization.",
+)
+
+parser.add_argument(
     "--input_file",
     type=str,
     default=None,
@@ -162,6 +169,11 @@ if __name__ == "__main__":
 
     log.debug("dataOpts: " + str(dataOpts))
 
+    if ARGS.min_max_norm:
+        log.debug("Init min-max-normalization activated")
+    else:
+        log.debug("Init 0/1-dB-normalization activated")
+
     sequence_len = int(ceil(ARGS.sequence_len * sr))
 
     hop = sequence_len
@@ -184,7 +196,8 @@ if __name__ == "__main__":
             freq_compression=freq_cmpr,
             f_min=fmin,
             f_max=fmax,
-            center=True
+            center=True,
+            min_max_normalize=ARGS.min_max_norm
         )
 
         log.info("number of files to predict={}".format(len(audio_files)))
@@ -206,7 +219,8 @@ if __name__ == "__main__":
              f_min=fmin,
              f_max=fmax,
              freq_compression=freq_cmpr,
-             center=True
+             center=True,
+             min_max_normalize=ARGS.min_max_norm
         )
 
         log.info("size of the file(samples)={}".format(dataset.n_frames))
@@ -226,7 +240,6 @@ if __name__ == "__main__":
     )
 
     t_decompr_f = T.Decompress(f_min=fmin, f_max=fmax, n_fft=n_fft, sr=sr)
-
 
     with torch.no_grad():
 
@@ -276,7 +289,6 @@ if __name__ == "__main__":
 
         #before or after writing intensity scaling to chose dB value
         scipy.io.wavfile.write(ARGS.output_dir+"/denoised_" + str(i) + "_" + filename[0].split("/")[-1].split(".")[0]+".wav", sr, total_audio.numpy().T)
-
 
     log.debug("Finished proccessing")
 

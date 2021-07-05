@@ -460,6 +460,7 @@ class Dataset(AudioDataset):
         noise_files_val=[],
         noise_files_test=[],
         random=False,
+        min_max_normalize=False,
         *args,
         **kwargs
     ):
@@ -578,10 +579,15 @@ class Dataset(AudioDataset):
 
         self.t_compr_a = T.Amp2Db(min_level_db=DefaultSpecDatasetOps["min_level_db"])
 
-        self.t_norm = T.Normalize(
-            min_level_db=DefaultSpecDatasetOps["min_level_db"],
-            ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
-        )
+        if min_max_normalize:
+            self.t_norm = T.MinMaxNormalize()
+            self._logger.debug("Init min-max-normalization activated")
+        else:
+            self.t_norm = T.Normalize(
+                min_level_db=DefaultSpecDatasetOps["min_level_db"],
+                ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
+            )
+            self._logger.debug("Init 0/1-dB-normalization activated")
 
         self.t_subseq = T.PaddedSubsequenceSampler(seq_len, dim=1, random=augmentation)
 
@@ -780,7 +786,8 @@ class StridedAudioDataset(torch.utils.data.Dataset):
         freq_compression: str = "linear",
         f_min: int = 200,
         f_max: int = 18000,
-        center=True
+        center=True,
+        min_max_normalize=False
     ):
 
         self.sp = signal.signal_proc()
@@ -811,11 +818,15 @@ class StridedAudioDataset(torch.utils.data.Dataset):
 
         self.t_compr_a = T.Amp2Db(min_level_db=DefaultSpecDatasetOps["min_level_db"])
 
-        self.t_norm = T.Normalize(
+        if min_max_normalize:
+            self.t_norm = T.MinMaxNormalize()
+            self._logger.debug("Init min-max-normalization activated")
+        else:
+            self.t_norm = T.Normalize(
                 min_level_db=DefaultSpecDatasetOps["min_level_db"],
-                ref_level_db=DefaultSpecDatasetOps["ref_level_db"]
-        )
-
+                ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
+            )
+            self._logger.debug("Init 0/1-dB-normalization activated")
 
 
     def __len__(self):
@@ -865,6 +876,7 @@ class SingleAudioFolder(AudioDataset):
         f_min=None,
         f_max=18000,
         center=True,
+        min_max_normalize=False,
         *args,
         **kwargs
     ):
@@ -929,10 +941,15 @@ class SingleAudioFolder(AudioDataset):
 
         self.t_compr_a = T.Amp2Db(min_level_db=DefaultSpecDatasetOps["min_level_db"])
 
-        self.t_norm = T.Normalize(
-            min_level_db=DefaultSpecDatasetOps["min_level_db"],
-            ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
-        )
+        if min_max_normalize:
+            self.t_norm = T.MinMaxNormalize()
+            self._logger.debug("Init min-max-normalization activated")
+        else:
+            self.t_norm = T.Normalize(
+                min_level_db=DefaultSpecDatasetOps["min_level_db"],
+                ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
+            )
+            self._logger.debug("Init 0/1-dB-normalization activated")
 
     def __getitem__(self, idx):
         file_name = self.file_names[idx]
