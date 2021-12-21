@@ -1,8 +1,9 @@
 """
 Module: signal.py
 Authors: Christian Bergler
+License: GNU General Public License v3.0
 Institution: Friedrich-Alexander-University Erlangen-Nuremberg, Department of Computer Science, Pattern Recognition Lab
-Last Access: 06.02.2021
+Last Access: 21.12.2021
 """
 
 import cv2
@@ -301,6 +302,12 @@ class signal_proc(object):
     """ Additional functionality for plotting input spectrograms """
     #################################################################
 
+    """
+    Flip data along give dimension
+    Code from https://github.com/pytorch/pytorch/issues/229
+    Access Data: 06.02.2021, Last Access Date: 21.12.2021
+    Changes: Modified by Christian Bergler (06.02.2021)
+    """
     def flip(self, x, dim=-1):
         indices = [slice(None)] * x.dim()
         indices[dim] = torch.arange(

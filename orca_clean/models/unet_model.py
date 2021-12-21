@@ -1,15 +1,18 @@
 """
 Module: unet_model.py
 Authors: Christian Bergler
+License: GNU General Public License v3.0
 Institution: Friedrich-Alexander-University Erlangen-Nuremberg, Department of Computer Science, Pattern Recognition Lab
-Last Access: 06.02.2021
+Last Access: 21.12.2021
 """
 
 """
-Code from https://github.com/milesial/Pytorch-UNet
-Code modified compared to https://github.com/milesial/Pytorch-UNet
-Access Data: 06.02.2021, Last Access Date: 06.02.2021
 Full assembly of the parts to form the complete network
+Code from https://github.com/milesial/Pytorch-UNet
+License: GNU General Public License v3.0
+Access Data: 06.02.2021, Last Access Date: 21.12.2021
+Changes: Modified by Christian Bergler (06.02.2021)
+
 """
 from .unet_parts import *
 

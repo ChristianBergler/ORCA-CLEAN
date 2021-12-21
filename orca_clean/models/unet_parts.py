@@ -1,15 +1,17 @@
 """
 Module: unet_parts.py
 Authors: Christian Bergler
+License: GNU General Public License v3.0
 Institution: Friedrich-Alexander-University Erlangen-Nuremberg, Department of Computer Science, Pattern Recognition Lab
 Last Access: 06.02.2021
 """
 
 """
-Code from https://github.com/milesial/Pytorch-UNet
-Code modified compared to https://github.com/milesial/Pytorch-UNet
-Access Data: 06.02.2021, Last Access Date: 06.02.2021
 Parts of the U-Net model
+Code from https://github.com/milesial/Pytorch-UNet
+License: GNU General Public License v3.0
+Access Data: 06.02.2021, Last Access Date: 21.12.2021
+Changes: Modified by Christian Bergler (06.02.2021)
 """
 import torch
 import torch.nn as nn
