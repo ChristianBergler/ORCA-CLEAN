@@ -167,6 +167,8 @@ if __name__ == "__main__":
     hop_length = dataOpts["hop_length"]
     n_freq_bins = dataOpts["n_freq_bins"]
     freq_cmpr = dataOpts["freq_compression"]
+    DefaultSpecDatasetOps["min_level_db"] = dataOpts["min_level_db"]
+    DefaultSpecDatasetOps["ref_level_db"] = dataOpts["ref_level_db"]
 
     log.debug("dataOpts: " + str(dataOpts))
 
