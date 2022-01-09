@@ -8,9 +8,9 @@ ORCA-CLEAN, is a deep denoising network designed for denoising of killer whale (
 If ORCA-CLEAN is used for your own research please cite the following publication: ORCA-CLEAN: A Deep Denoising Toolkit for Killer Whale Communication (https://www.isca-speech.org/archive/Interspeech_2020/abstracts/1316.html)
 
 ```
-@inproceedings{Bergler2020,
+@inproceedings{Bergler-OC-2020,
   author={Christian Bergler and Manuel Schmitt and Andreas Maier and Simeon Smeele and Volker Barth and Elmar Nöth},
-  title={{ORCA-CLEAN: A Deep Denoising Toolkit for Killer Whale Communication}},
+  title={ORCA-CLEAN: A Deep Denoising Toolkit for Killer Whale Communication},
   year=2020,
   booktitle={Proc. Interspeech 2020},
   pages={1136--1140},
