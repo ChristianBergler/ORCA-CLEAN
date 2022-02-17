@@ -290,8 +290,9 @@ if __name__ == "__main__":
                 total_audio = torch.istft(audio_spec, n_fft, hop_length=hop_length, onesided=True, center=True, window=window)
                 scipy.io.wavfile.write(ARGS.output_dir + "/denoised_" + str(i) + "_" + filename[0].split("/")[-1].split(".")[0]+".wav", sr, total_audio.numpy().T)
 
-        #before or after writing intensity scaling to chose dB value
-        scipy.io.wavfile.write(ARGS.output_dir+"/denoised_" + str(i) + "_" + filename[0].split("/")[-1].split(".")[0]+".wav", sr, total_audio.numpy().T)
+        if concatenate:
+            #before or after writing intensity scaling to chose dB value
+            scipy.io.wavfile.write(ARGS.output_dir+"/denoised_" + str(i) + "_" + filename[0].split("/")[-1].split(".")[0]+".wav", sr, total_audio.numpy().T)
 
     log.debug("Finished proccessing")
 
