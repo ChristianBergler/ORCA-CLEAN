@@ -828,10 +828,12 @@ class StridedAudioDataset(torch.utils.data.Dataset):
                 ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
             )
             self._logger.debug("Init 0/1-dB-normalization activated")
-
-
+            
     def __len__(self):
-        return max(int(ceil((self.n_frames + 1 - self.sequence_len) / self.hop)), 1)
+        full_frames = max(int(ceil((self.n_frames + 1 - self.sequence_len) / self.hop)), 1)
+        if (full_frames * self.sequence_len) < self.n_frames:
+            full_frames += 1
+        return full_frames
 
     """
     Extracts signal part according to the current and respective position of the given audio file.
