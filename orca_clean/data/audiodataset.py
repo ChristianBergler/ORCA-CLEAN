@@ -821,13 +821,11 @@ class StridedAudioDataset(torch.utils.data.Dataset):
 
         if min_max_normalize:
             self.t_norm = T.MinMaxNormalize()
-            self._logger.debug("Init min-max-normalization activated")
         else:
             self.t_norm = T.Normalize(
                 min_level_db=DefaultSpecDatasetOps["min_level_db"],
                 ref_level_db=DefaultSpecDatasetOps["ref_level_db"],
             )
-            self._logger.debug("Init 0/1-dB-normalization activated")
             
     def __len__(self):
         full_frames = max(int(ceil((self.n_frames + 1 - self.sequence_len) / self.hop)), 1)
