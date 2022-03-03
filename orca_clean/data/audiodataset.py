@@ -791,8 +791,6 @@ class StridedAudioDataset(torch.utils.data.Dataset):
         min_max_normalize=False
     ):
 
-        self.sp = signal.signal_proc()
-
         self.hop = hop
         self.center = center
         self.filename = file_name
@@ -885,15 +883,12 @@ class SingleAudioFolder(AudioDataset):
         if self.dataset_name is not None:
             self._logger.info("Init dataset {}...".format(self.dataset_name))
 
-        self.sp = signal.signal_proc()
-
         self.sr = sr
         self.f_min = f_min
         self.f_max = f_max
         self.n_fft = n_fft
         self.center = center
         self.hop_length = hop_length
-        self.sp = signal.signal_proc()
         self.freq_compression = freq_compression
 
         valid_freq_compressions = ["linear", "mel", "mfcc"]
