@@ -27,8 +27,6 @@ Manuscript Title: <em>ORCA-CLEAN: A Deep Denoising Toolkit for Killer Whale Comm
 
 <br>[ORCA-CLEAN - Denoised Audio/Spectrogram Examples](https://christianbergler.github.io/ORCA-CLEAN/)<br><br>
 
-The source code of ORCA-CLEAN will be publicly available soon!<br><br>
-
 ## Python, Python Libraries, and Version
 ORCA-CLEAN is a deep learning algorithm which was implemented in Python (Version=3.8) (Operating System: Linux) together with the deep learning framework PyTorch (Version=1.7.1, TorchVision=0.8.2, TorchAudio=0.7.2). Moreover it requires the following Python libraries: Pillow, MatplotLib, Librosa, TensorboardX, Matplotlib, Soundfile, Scikit-image, Six, Opencv-python (recent versions). ORCA-CLEAN is currently compatible with Python 3.8 and PyTorch (Version=1.9.0, TorchVision=0.10.0, TorchAudio=0.9.0)
 
