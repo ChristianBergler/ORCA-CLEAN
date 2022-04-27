@@ -3,7 +3,7 @@ Module: signal.py
 Authors: Christian Bergler
 License: GNU General Public License v3.0
 Institution: Friedrich-Alexander-University Erlangen-Nuremberg, Department of Computer Science, Pattern Recognition Lab
-Last Access: 21.12.2021
+Last Access: 26.04.2022
 """
 
 import cv2
@@ -172,33 +172,54 @@ class signal_proc(object):
             return torch.index_select(spectrogram, 0, torch.arange(start, end, dtype=torch.long))
 
     """ Identifying spectral strong intensity regions based on a give target length of the original spectrogram (sliding winodw approach, intensity curve, peak picking) """
-    def identify(self, spectrogram, power_spec_max, target_len):
+    def identify(self, spectrogram, power_spec_max, target_len=128, perc_of_max_signal=1.0, min_bin_of_interest=100, max_bin_of_inerest=750):
         signals = dict()
         if spectrogram.shape[0] > target_len:
             start = 0
             end = start + target_len
             while end < spectrogram.shape[0]:
-                spec_to_identify = torch.index_select(power_spec_max, 0, torch.arange(start, end, dtype=torch.long))#squeeze(dim=0)
+                spec_to_identify = torch.index_select(power_spec_max, 0, torch.arange(start, end, dtype=torch.long))
                 spec_to_identify = spec_to_identify.transpose(0, 1)
-                signal_strength = torch.sum(spec_to_identify[100:750, :])
+                signal_strength = torch.sum(spec_to_identify[min_bin_of_interest:max_bin_of_inerest, :])
                 signals[end] = signal_strength.item()
                 start = start + 1
                 end = start + target_len
             time = np.array(list(signals.keys()))
             signal_strengths = np.array(list(signals.values()))
-            peaks, _ = find_peaks(signal_strengths, distance=150, height=0.70*np.max(signal_strengths))#, height=0.3*np.max(signal_strengths))
+
+            peaks, peak_dict = find_peaks(signal_strengths, distance=150, height=perc_of_max_signal * np.max(signal_strengths))
+
             if peaks.size > 0:
-                max_idx = np.argmax(signal_strengths[peaks])
-                return time[peaks[max_idx]] - target_len, time[peaks[max_idx]]
+                times = []
+
+                if perc_of_max_signal == 1.0:
+                    max_idx = np.argmax(signal_strengths[peaks])
+                    times.append((time[peaks[max_idx]] - target_len, time[peaks[max_idx]]))
+                    return times
+
+                for p in peaks:
+                    times.append((time[p] - target_len, time[p]))
+
+                return times
+
             else:
-                return time[np.argmax(signal_strengths)] - target_len, time[np.argmax(signal_strengths)]
+                return [(time[np.argmax(signal_strengths)] - target_len, time[np.argmax(signal_strengths)])]
         else:
-            return None, None
+            return [(None, None)]
 
     """ Detection algorithm of spectral strong intensity regions (vocalization areas)  """
-    def detect_strong_spectral_region(self, spectrogram, spectrogram_to_extract, min_bin_of_interest=100, max_bin_of_inerest=750, exp_non_linearity=10, threshold=0.5, moving_avg_bin=50, morph_max_bin_of_interest=250, nfft=4096, kernel_sizes=[9,3,5], target_len=128):
+    def detect_strong_spectral_region(self, spectrogram, spectrogram_to_extract, min_bin_of_interest=100, max_bin_of_inerest=750, exp_non_linearity=10, threshold=0.5, n_fft=4096, kernel_sizes=[9,3,5], target_len=128, perc_of_max_signal=1.0):
         spectrogram = spectrogram.squeeze(dim=0)
-        max_bin = math.floor(nfft / 2) + 1
+
+        spectral_bins = max_bin_of_inerest-min_bin_of_interest
+
+        moving_avg_bin = int(0.1 * spectral_bins)
+        if moving_avg_bin > 50:
+            moving_avg_bin = 50
+
+        morph_max_bin_of_interest = int(0.35 * spectral_bins)
+
+        max_bin = math.floor(n_fft / 2) + 1
 
         final_spec = torch.zeros([spectrogram.shape[0], spectrogram.shape[1]])
 
@@ -232,23 +253,36 @@ class signal_proc(object):
 
         power_clear = torch.tensor(ndi.median_filter(power_clear.numpy(), size=kernel_sizes[2]))
 
-        start_t, end_t = self.identify(spectrogram.squeeze(dim=0), power_clear, target_len)
+        # identify spectral orca parts
+        times = self.identify(spectrogram.squeeze(dim=0), power_clear, perc_of_max_signal=perc_of_max_signal, min_bin_of_interest=min_bin_of_interest, max_bin_of_inerest=max_bin_of_inerest, target_len=target_len)
 
+        # extract spec
+        target_specs = []
         if spectrogram_to_extract is not None:
-            target_spec = self.extract_spec(spectrogram_to_extract.squeeze(dim=0), start_t, end_t, target_len)
+            for start_t, end_t in times:
+                target_specs.append(
+                    self.extract_spec(spectrogram_to_extract.squeeze(dim=0), start_t, end_t, target_len))
         else:
-            target_spec = self.extract_spec(spectrogram, start_t, end_t, target_len)
+            for start_t, end_t in times:
+                target_specs.append(self.extract_spec(spectrogram, start_t, end_t, target_len))
 
-        return target_spec
+        return target_specs, times
 
     """ Create binary mask out of a give spectrogram  """
-    def create_mask(self, trainable_spectrogram, nfft=4096, sr=44100, fmin=800, fmax=10000, kernel_sizes=[4,3,5,2], moving_avg_bin=25, threshold=0.025):
+    def create_mask(self, trainable_spectrogram, nfft=4096, sr=44100, fmin=800, fmax=10000, kernel_sizes=[4,3,5,2], threshold=0.025):
         trainable_spectrogram = trainable_spectrogram.squeeze()
         final_spec = torch.zeros([trainable_spectrogram.shape[0], trainable_spectrogram.shape[1]])
         max_bin = math.floor(nfft/2)+1
 
         lower_bound = math.ceil(fmin/((sr/2)/max_bin))
         upper_bound = math.ceil(fmax/((sr/2)/max_bin))
+
+        spectral_bins = upper_bound - lower_bound
+
+        moving_avg_bin = int(0.1 * spectral_bins)
+        if moving_avg_bin > 25:
+            moving_avg_bin = 25
+
         radius = kernel_sizes[0]
 
         power_train = trainable_spectrogram.clone()

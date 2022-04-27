@@ -3,7 +3,7 @@ Module: unet_parts.py
 Authors: Christian Bergler
 License: GNU General Public License v3.0
 Institution: Friedrich-Alexander-University Erlangen-Nuremberg, Department of Computer Science, Pattern Recognition Lab
-Last Access: 06.02.2021
+Last Access: 26.04.2022
 """
 
 """

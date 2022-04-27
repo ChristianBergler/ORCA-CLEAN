@@ -3,7 +3,7 @@ Module: audiodataset.py
 Authors: Christian Bergler
 License: GNU General Public License v3.0
 Institution: Friedrich-Alexander-University Erlangen-Nuremberg, Department of Computer Science, Pattern Recognition Lab
-Last Access: 21.12.2021
+Last Access: 26.04.2022
 """
 
 import os
@@ -461,7 +461,10 @@ class Dataset(AudioDataset):
         noise_files_val=[],
         noise_files_test=[],
         random=False,
+        perc_of_max_signal=1.0,
         min_max_normalize=False,
+        min_thres_detect=0.05,
+        max_thres_detect=0.40,
         *args,
         **kwargs
     ):
@@ -483,14 +486,17 @@ class Dataset(AudioDataset):
         self.f_max = f_max
         self.n_fft = n_fft
         self.random = random
+        self.seq_len = seq_len
         self.hop_length = hop_length
         self.augmentation = augmentation
         self.file_reader = AsyncFileReader()
         self.noise_files_val = noise_files_val
         self.noise_files_test = noise_files_test
+        self.min_thres_detect = min_thres_detect
+        self.max_thres_detect = max_thres_detect
         self.freq_compression = freq_compression
         self.noise_files_train = noise_files_train
-
+        self.perc_of_max_signal = perc_of_max_signal
 
         valid_freq_compressions = ["linear", "mel", "mfcc"]
 
@@ -624,7 +630,15 @@ class Dataset(AudioDataset):
         sample_orca_detect = self.t_compr_a(sample_orca_detect)
         sample_orca_detect = self.t_norm(sample_orca_detect)
 
-        sample_spec = self.sp.detect_strong_spectral_region(sample_orca_detect, sample_spec).unsqueeze(dim=0)
+        sample_spec, _ = self.sp.detect_strong_spectral_region(
+            spectrogram=sample_orca_detect, spectrogram_to_extract=sample_spec, n_fft=self.n_fft,
+            target_len=self.seq_len, perc_of_max_signal=0.1,#self.perc_of_max_signal,
+            min_bin_of_interest=int(self.min_thres_detect * sample_orca_detect.shape[-1]),
+            max_bin_of_inerest=int(self.max_thres_detect * sample_orca_detect.shape[-1]))
+
+        # Randomly select from a pool of given spectrograms from the strongest regions
+        if isinstance(sample_spec, list):
+            sample_spec = random.choice(sample_spec).unsqueeze(dim=0)
 
         sample_spec_ncmpr = sample_spec.clone()
 
