@@ -524,7 +524,7 @@ class Dataset(AudioDataset):
                 spec_transform=T.Compose(spec_transforms),
                 n_fft=n_fft,
                 hop_length=hop_length,
-                file_reader=AsyncFileReader())
+                file_reader=self.file_reader)
 
         if self.augmentation:
             self._logger.debug("Init augmentation transforms for intensity, time, and pitch shift")
@@ -933,7 +933,7 @@ class SingleAudioFolder(AudioDataset):
                 spec_transform=T.Compose(spec_transforms),
                 n_fft=n_fft,
                 hop_length=hop_length,
-                file_reader=AsyncFileReader(),
+                file_reader=self.file_reader,
             )
 
         if self.freq_compression == "linear":
