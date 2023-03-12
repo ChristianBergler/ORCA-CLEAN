@@ -632,7 +632,7 @@ class Dataset(AudioDataset):
 
         sample_spec, _ = self.sp.detect_strong_spectral_region(
             spectrogram=sample_orca_detect, spectrogram_to_extract=sample_spec, n_fft=self.n_fft,
-            target_len=self.seq_len, perc_of_max_signal=0.1,#self.perc_of_max_signal,
+            target_len=self.seq_len, perc_of_max_signal=self.perc_of_max_signal,
             min_bin_of_interest=int(self.min_thres_detect * sample_orca_detect.shape[-1]),
             max_bin_of_inerest=int(self.max_thres_detect * sample_orca_detect.shape[-1]))
 
